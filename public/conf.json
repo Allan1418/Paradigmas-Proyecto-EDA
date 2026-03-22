@@ -1,0 +1,19 @@
+{
+  "packages": ["micropip"],
+  "fetch": [
+    {
+      "from": ".",
+      "to_folder": ".",
+      "files": [
+        "main.py",
+        "report.html", 
+        "services/__init__.py",
+        "services/data_loader.py",
+        "services/data_validator.py",
+        "services/eda_module.py",
+        "services/ai_module.py", 
+        "services/visualizer.py"
+      ]
+    }
+  ]
+}

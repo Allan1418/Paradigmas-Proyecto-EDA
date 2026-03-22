@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte EDA — {{ filename }}</title>
+    <script src="https://cdn.plot.ly/plotly-3.4.0.min.js" charset="utf-8"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            color: #1a1a1a;
+            background: #fff;
+            padding: 40px 60px;
+            max-width: 960px;
+            margin: auto;
+            line-height: 1.6;
+        }
+        h1 { font-size: 20px; font-weight: bold; margin-bottom: 4px; }
+        h2 { font-size: 14px; font-weight: bold; margin: 28px 0 10px;
+             padding-bottom: 6px; border-bottom: 1px solid #ccc; text-transform: uppercase; letter-spacing: 0.5px; }
+        .meta { color: #555; font-size: 12px; margin-bottom: 24px; }
+        .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+        .metric { border: 1px solid #ddd; padding: 12px; border-radius: 4px; }
+        .metric-label { font-size: 10px; text-transform: uppercase; color: #666; }
+        .metric-value { font-size: 22px; font-weight: bold; margin-top: 2px; }
+        .methods-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 10px 0 16px; }
+        .method-card { border: 1px solid #ddd; padding: 10px; border-radius: 4px; text-align: center; }
+        .method-card .method-label { font-size: 10px; text-transform: uppercase; color: #666; }
+        .method-card .method-value { font-size: 20px; font-weight: bold; margin-top: 2px; }
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px; }
+        th { text-align: left; padding: 7px 10px; background: #f5f5f5; border: 1px solid #ddd; font-size: 11px; }
+        td { padding: 6px 10px; border: 1px solid #e8e8e8; }
+        tr:nth-child(even) td { background: #fafafa; }
+        .insight { padding: 8px 12px; border-left: 3px solid #2563eb; background: #f0f4ff;
+                   margin: 6px 0; font-size: 12px; color: #1a1a1a; }
+        .insight.warning { border-color: #f59e0b; background: #fffbeb; }
+        .insight.success { border-color: #10b981; background: #f0fdf4; }
+        .chart-wrap { margin: 16px 0; page-break-inside: avoid; }
+        hr { border: none; border-top: 1px solid #e0e0e0; margin: 20px 0; }
+        .no-print { text-align: right; margin-bottom: 20px; }
+        .no-print button {
+            background: #2563eb; color: #fff; border: none;
+            padding: 8px 18px; border-radius: 4px; cursor: pointer; font-size: 13px;
+        }
+        table, .chart-wrap, .metrics, .insight {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+        @media print { .no-print { display: none; } body { padding: 20px; } }
+    </style>
+</head>
+<body>
+
+    <h1>Reporte de Análisis Exploratorio de Datos</h1>
+    <p class="meta">
+        Archivo: <strong>{{ filename }}</strong> &nbsp;|&nbsp;
+        Registros: <strong>{{ summary.filas }}</strong> &nbsp;|&nbsp;
+        Variables: <strong>{{ summary.columnas }}</strong>
+    </p>
+
+    <!-- Resumen de limpieza -->
+    <div class="metrics">
+        <div class="metric">
+            <div class="metric-label">Filas</div>
+            <div class="metric-value">{{ summary.filas }}</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Columnas</div>
+            <div class="metric-value">{{ summary.columnas }}</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Duplicados eliminados</div>
+            <div class="metric-value">{{ cleaning_report.duplicados_eliminados }}</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Nulos rellenados</div>
+            <div class="metric-value">{{ cleaning_report.valores_nulos_rellenados }}</div>
+        </div>
+    </div>
+
+    <!-- Hallazgos -->
+    <h2>Hallazgos Principales</h2>
+    {% for insight in analysis.insights %}
+    <div class="insight {% if insight.tipo == 'critico' %}warning{% endif %}">
+        <strong>{{ insight.titulo }}:</strong> {{ insight.texto }}
+    </div>
+    {% endfor %}
+
+    <!-- Estadísticas descriptivas -->
+    {% if summary.estadisticas %}
+    <h2>Estadísticas Descriptivas</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Variable</th>
+                <th>Media</th>
+                <th>Mediana</th>
+                <th>Desv. Est.</th>
+                <th>Mín</th>
+                <th>Q1 (25%)</th>
+                <th>Q3 (75%)</th>
+                <th>Máx</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for col, stats in summary.estadisticas.items() %}
+            <tr>
+                <td><strong>{{ col }}</strong></td>
+                <td>{{ stats.mean }}</td>
+                <td>{{ stats.q50 }}</td>
+                <td>{{ stats.std }}</td>
+                <td>{{ stats.min }}</td>
+                <td>{{ stats.q25 }}</td>
+                <td>{{ stats.q75 }}</td>
+                <td>{{ stats.max }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <!-- Distribuciones -->
+    {% if charts.histograms %}
+    <h2>Distribución de Variables</h2>
+    <div class="chart-wrap">{{ charts.histograms|safe }}</div>
+    {% endif %}
+
+    {% if charts.boxplots %}
+    <h2>Diagramas de Caja</h2>
+    <div class="chart-wrap">{{ charts.boxplots|safe }}</div>
+    {% endif %}
+
+    <!-- Correlaciones -->
+    {% if analysis.correlaciones.exito %}
+    <h2>Análisis de Correlaciones (Pearson)</h2>
+    <table>
+        <thead>
+            <tr><th>Variable 1</th><th>Variable 2</th><th>Pearson (r)</th><th>Fuerza</th></tr>
+        </thead>
+        <tbody>
+            {% for corr in analysis.correlaciones.top_correlaciones %}
+            <tr>
+                <td>{{ corr.variable_1 }}</td>
+                <td>{{ corr.variable_2 }}</td>
+                <td>{{ corr.pearson }}</td>
+                <td>{{ corr.fuerza }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if charts.heatmap %}
+    <div class="chart-wrap">{{ charts.heatmap|safe }}</div>
+    {% endif %}
+    {% endif %}
+
+    <!-- Clustering -->
+    {% if analysis.clustering.exito %}
+    <h2>Agrupamiento K-Means</h2>
+    <p style="margin-bottom: 6px; font-size: 12px;">{{ analysis.clustering.insight }}</p>
+    {% if analysis.clustering.dbscan.exito %}
+    <p style="margin-bottom: 10px; font-size: 12px; color: #555;">
+        <strong>DBSCAN:</strong> {{ analysis.clustering.dbscan.insight }}
+    </p>
+    {% endif %}
+    <table>
+        <thead>
+            <tr><th>Grupo</th><th>Registros</th><th>Porcentaje</th></tr>
+        </thead>
+        <tbody>
+            {% for name, info in analysis.clustering.resumen_clusters.items() %}
+            <tr>
+                <td><strong>{{ name }}</strong></td>
+                <td>{{ info.cantidad }}</td>
+                <td>{{ info.porcentaje }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if charts.cluster_scatter %}
+    <div class="chart-wrap">{{ charts.cluster_scatter|safe }}</div>
+    {% endif %}
+    {% endif %}
+
+    <!-- Outliers -->
+    {% if analysis.outliers.exito %}
+    <h2>Valores Atípicos — Comparación de Métodos</h2>
+    <p style="margin-bottom: 10px; font-size: 12px;">{{ analysis.outliers.insight }}</p>
+
+    <div class="methods-grid">
+        <div class="method-card">
+            <div class="method-label">IQR</div>
+            <div class="method-value">{{ analysis.outliers.total_outliers }}</div>
+        </div>
+        {% if analysis.outliers.zscore %}
+        <div class="method-card">
+            <div class="method-label">Z-score</div>
+            <div class="method-value">{{ analysis.outliers.zscore.total }}</div>
+        </div>
+        {% endif %}
+        {% if analysis.outliers.isolation_forest %}
+        <div class="method-card">
+            <div class="method-label">Isolation Forest</div>
+            <div class="method-value">{{ analysis.outliers.isolation_forest.total }}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <table>
+        <thead>
+            <tr><th>Variable</th><th>Outliers (IQR)</th><th>Porcentaje</th><th>Rango normal</th></tr>
+        </thead>
+        <tbody>
+            {% for col, data in analysis.outliers.por_columna.items() %}
+            <tr>
+                <td>{{ col }}</td>
+                <td>{{ data.cantidad }}</td>
+                <td>{{ data.porcentaje }}%</td>
+                <td>{{ data.rango_normal }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if charts.outlier_chart %}
+    <div class="chart-wrap">{{ charts.outlier_chart|safe }}</div>
+    {% endif %}
+    {% endif %}
+
+    <!-- Importancia de Variables -->
+    {% if analysis.feature_importance.exito %}
+    <h2>Importancia de Variables (Random Forest)</h2>
+    {% for ins in analysis.feature_importance.insights %}
+    <div class="insight success">{{ ins }}</div>
+    {% endfor %}
+    <table style="margin-top: 12px;">
+        <thead>
+            <tr><th>Variable objetivo</th><th>Predictor principal</th><th>Importancia</th><th>R²</th></tr>
+        </thead>
+        <tbody>
+            {% for r in analysis.feature_importance.resultados %}
+            <tr>
+                <td>{{ r.objetivo }}</td>
+                <td>{{ r.top_variable }}</td>
+                <td>{{ r.importancia_pct }}%</td>
+                <td>{{ r.r2_pct }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if charts.feature_importance %}
+    <div class="chart-wrap">{{ charts.feature_importance|safe }}</div>
+    {% endif %}
+    {% endif %}
+
+    <hr>
+    <p style="text-align: center; font-size: 11px; color: #888; margin-top: 12px;">
+        Reporte generado automáticamente — Proyecto Académico: Análisis Exploratorio de Datos
+    </p>
+
+</body>
+</html>
