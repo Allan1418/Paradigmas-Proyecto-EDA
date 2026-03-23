@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DataStore AI - Explorador Estático</title>
+    <title>EDA AI - Explorador Estático</title>
     
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <link rel="stylesheet" href="https://pyscript.net/releases/2026.3.1/core.css" />
     <script type="module" src="https://pyscript.net/releases/2026.3.1/core.js"></script>
@@ -44,8 +44,8 @@
 
         <div id="loading-indicator" class="hidden text-center py-10">
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p class="text-blue-600 font-medium">Procesando datos y entrenando modelos IA... <br>
-                <span class="text-sm text-slate-400">Esto puede tomar de unos segundos a minutos dependiendo del tamaño del dataset.</span></p>
+            <p class="text-blue-600 font-medium">Procesando datos y entrenando modelos IA...</p>
+            <p id="loading-progress" class="text-sm font-bold text-slate-500 mt-2">Iniciando...</p>
         </div>
 
         <div id="results-container" class="hidden space-y-8">

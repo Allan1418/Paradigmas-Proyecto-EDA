@@ -119,6 +119,11 @@ async def procesar_archivo(evento):
         from services.eda_module import get_summary
         from services.ai_module import run_full_analysis
         from services import visualizer
+        import random
+        
+        async def actualizar_estado(mensaje):
+            document.getElementById("loading-progress").innerText = mensaje
+            await asyncio.sleep(0.1)
         
         # Escribir archivo al disco duro fantasma
         nombre_archivo = archivo_seleccionado.name
@@ -129,12 +134,30 @@ async def procesar_archivo(evento):
         with open(ruta_virtual, "wb") as f:
             f.write(arreglo_bytes)
             
-        # Ejecutar logica matematica
+        
+        # Ejecutar logica matematica con actualizaciones de estado
+        await actualizar_estado("Leyendo el archivo en memoria...")
         df = load_file(ruta_virtual)
+        
+        await actualizar_estado("Detectando tipos de variables...")
         column_types = detect_column_types(df)
+        
+        await actualizar_estado("Limpiando datos e imputando valores...")
         df, cleaning_report = clean_data(df)
+        
+        await actualizar_estado("Calculando estadísticas descriptivas...")
         summary = get_summary(df, column_types)
-        analysis = run_full_analysis(df, column_types)
+        
+        
+        await actualizar_estado("Preparando muestra para modelos predictivos...")
+        LIMITE_IA = 5000
+        if len(df) > LIMITE_IA:
+            df_ia = df.sample(n=LIMITE_IA, random_state=42)
+        else:
+            df_ia = df
+            
+        await actualizar_estado("Entrenando Machine Learning...")
+        analysis = run_full_analysis(df_ia, column_types)
         
         estado_global["df"] = df
         estado_global["column_types"] = column_types
@@ -143,9 +166,31 @@ async def procesar_archivo(evento):
         estado_global["filename"] = nombre_archivo
         estado_global["cleaning_report"] = cleaning_report
         
+        
         # Inyectar Resultados de Texto
+        await actualizar_estado("Generando reporte visual...")
         renderizar_resumen(summary)
         renderizar_insights(analysis)
+        
+        
+        # limitacion de la cantidad de puntos en graficos
+        MAX_PUNTOS = 3000
+        if len(df) > MAX_PUNTOS:
+            df_graficos = df.sample(n=MAX_PUNTOS, random_state=42)
+        else:
+            df_graficos = df
+            
+        cluster_data = analysis.get('clustering', {})
+        if cluster_data and cluster_data.get('exito') and len(cluster_data.get('labels', [])) > MAX_PUNTOS:
+            indices = random.sample(range(len(cluster_data['labels'])), MAX_PUNTOS)
+            cluster_graficos = {
+                'exito': True,
+                'labels': [cluster_data['labels'][i] for i in indices],
+                'x_2d': [cluster_data['x_2d'][i] for i in indices],
+                'y_2d': [cluster_data['y_2d'][i] for i in indices]
+            }
+        else:
+            cluster_graficos = cluster_data
         
         # Renderizar Graficos
         document.getElementById("chart-heatmap").innerHTML = "" 
