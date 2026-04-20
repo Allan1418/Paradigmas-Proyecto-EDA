@@ -22,8 +22,8 @@
 
     <div class="max-w-6xl mx-auto">
         <header class="mb-10 text-center">
-            <h1 class="text-4xl font-bold text-blue-600 mb-2">DataStore AI</h1>
-            <p class="text-slate-500">Sistema Inteligente de Análisis Exploratorio (Versión Estática)</p>
+            <h1 class="text-4xl font-bold text-blue-600 mb-2">EDA AI <br> Explorador Estático</h1>
+            <p class="text-slate-500">Sistema Inteligente de Análisis Exploratorio Estático</p>
         </header>
 
         <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-200 mb-8 text-center">
@@ -48,40 +48,88 @@
             <p id="loading-progress" class="text-sm font-bold text-slate-500 mt-2">Iniciando...</p>
         </div>
 
-        <div id="results-container" class="hidden space-y-8">
-            <div class="flex justify-end gap-4 border-b border-slate-200 pb-6">
-                <button id="btn-export-html" class="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-lg shadow-sm transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-                    Descargar HTML
-                </button>
-                <button id="btn-export-pdf" class="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg shadow-sm transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    Descargar PDF
-                </button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                    <h3 class="font-bold text-lg mb-4 border-b pb-2">Resumen del Dataset</h3>
-                    <div id="summary-content" class="text-sm"></div>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                    <h3 class="font-bold text-lg mb-4 border-b pb-2">Insights IA</h3>
-                    <div id="insights-content" class="space-y-3 text-sm"></div>
+        <div id="results-container" class="hidden space-y-8 mt-8">
+            
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200 pb-4">
+                <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Análisis de Datos Finalizado</h2>
+                <div class="flex gap-3">
+                    <button id="btn-export-html" class="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-lg shadow-sm transition-all active:scale-95">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                        Descargar HTML
+                    </button>
+                    <button id="btn-export-pdf" class="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg shadow-sm transition-all active:scale-95">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Descargar PDF
+                    </button>
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                <h3 class="font-bold text-lg mb-4 border-b pb-2">Visualizaciones</h3>
-                <div id="charts-container" class="space-y-8">
-                    <div id="chart-heatmap"></div>
-                    <div id="chart-scatter"></div>
-                    <div id="chart-outliers"></div>
-                    <div id="chart-histograms"></div>
-                    <div id="chart-boxplots"></div>
-                    <div id="chart-feature-importance"></div>
+            <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h3 class="font-bold text-lg mb-6 text-slate-800 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Ficha Técnica de los Datos
+                </h3>
+                <div id="summary-content"></div>
+            </section>
+
+            <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h3 class="font-bold text-lg mb-2 text-slate-800 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    Hallazgos Principales (IA)
+                </h3>
+                <p class="text-slate-500 text-sm mb-6">Resumen ejecutivo generado por los modelos de Inteligencia Artificial.</p>
+                <div id="insights-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </section>
+
+            <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h3 class="font-bold text-lg mb-8 border-b pb-4 text-slate-800">Visualizaciones Detalladas</h3>
+                
+                <div id="charts-container" class="space-y-16">
+                    <div class="chart-block">
+                        <div id="chart-heatmap"></div>
+                        <p class="mt-4 text-sm text-slate-600 bg-slate-50 p-4 rounded-lg border-l-4 border-slate-300 italic">
+                            <strong>Análisis de Correlación:</strong> Muestra la fuerza y dirección de la relación lineal entre variables numéricas. Valores cercanos a 1 indican una relación fuerte positiva, mientras que valores cercanos a -1 indican una relación inversa.
+                        </p>
+                    </div>
+
+                    <div class="chart-block">
+                        <div id="chart-feature-importance"></div>
+                        <p class="mt-4 text-sm text-slate-600 bg-slate-50 p-4 rounded-lg border-l-4 border-slate-300 italic">
+                            <strong>Importancia de Variables (Random Forest):</strong> Analiza qué variables explican mejor el comportamiento de los datos. Las barras más largas indican los predictores con mayor influencia matemática sobre el resultado.
+                        </p>
+                    </div>
+
+                    <div class="chart-block">
+                        <div id="chart-scatter"></div>
+                        <p class="mt-4 text-sm text-slate-600 bg-slate-50 p-4 rounded-lg border-l-4 border-slate-300 italic">
+                            <strong>Agrupamiento (Clustering):</strong> Representación en 2D de cómo la IA agrupa los registros según sus similitudes. Cada color representa un perfil o segmento distinto identificado automáticamente.
+                        </p>
+                    </div>
+
+                    <div class="chart-block">
+                        <div id="chart-outliers"></div>
+                        <p class="mt-4 text-sm text-slate-600 bg-slate-50 p-4 rounded-lg border-l-4 border-slate-300 italic">
+                            <strong>Detección de Valores Atípicos:</strong> Identifica registros que se alejan significativamente del comportamiento normal. Es crucial para identificar errores de carga o casos excepcionales en el negocio.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-8 border-t border-slate-200">
+                        <div class="chart-block min-w-0 flex flex-col">
+                            <div id="chart-histograms" class="w-full overflow-hidden rounded-lg border border-slate-100"></div>
+                            <p class="mt-4 text-sm text-slate-600 bg-slate-50 p-4 rounded-lg border-l-4 border-slate-300 italic flex-grow">
+                                <strong>Distribución (Histogramas):</strong> Muestra la frecuencia con la que aparecen los valores numéricos. Es fundamental para identificar asimetrías, sesgos o si los datos siguen un comportamiento normal (campana de Gauss).
+                            </p>
+                        </div>
+
+                        <div class="chart-block min-w-0 flex flex-col">
+                            <div id="chart-boxplots" class="w-full overflow-hidden rounded-lg border border-slate-100"></div>
+                            <p class="mt-4 text-sm text-slate-600 bg-slate-50 p-4 rounded-lg border-l-4 border-slate-300 italic flex-grow">
+                                <strong>Dispersión (Diagramas de Caja):</strong> Visualiza la mediana, los cuartiles y la variabilidad de los datos. Los puntos individuales que caen fuera de las líneas principales representan valores estadísticamente atípicos.
+                            </p>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </section>
         </div>
     </div>
 
