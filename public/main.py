@@ -98,27 +98,21 @@ def manejar_drop(evento):
 def optimizar_grafico(fig):
     if fig is None: return None
     
-    # 1. Inteligencia básica: Inspeccionar los datos del eje X
     necesita_rotacion = False
     
-    # Plotly guarda las líneas/barras del gráfico en 'fig.data'
     if fig.data:
         for trace in fig.data:
-            # Revisamos si el gráfico tiene un eje X
             if hasattr(trace, 'x') and trace.x is not None:
                 for etiqueta in trace.x:
-                    # Si la etiqueta es TEXTO (no un número) y tiene más de 10 letras
                     if isinstance(etiqueta, str) and len(etiqueta) > 10:
                         necesita_rotacion = True
-                        break # Al encontrar uno largo, dejamos de buscar
+                        break
             if necesita_rotacion:
                 break
     
-    # 2. Aplicar márgenes: Damos más espacio abajo (b=120) SOLO si vamos a rotar
     margen_inferior = 120 if necesita_rotacion else 50
     fig.update_layout(margin=dict(t=90, l=150, b=margen_inferior, r=20))
     
-    # 3. Aplicar rotación condicional
     if necesita_rotacion:
         fig.update_xaxes(tickangle=-45, automargin=True)
     else:
@@ -129,7 +123,7 @@ def optimizar_grafico(fig):
     if hasattr(fig.layout, 'annotations') and fig.layout.annotations:
         for ann in fig.layout.annotations:
             if hasattr(ann, 'text') and ann.text and isinstance(ann.text, str):
-                # Si el título tiene más de 14 caracteres, lo truncamos
+                
                 if len(ann.text) > 14:
                     ann.text = ann.text[:12] + "..."
     
